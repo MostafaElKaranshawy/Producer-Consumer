@@ -1,6 +1,25 @@
 <template>
   <div id="app" class="app">
-    <div class="header">Header</div>
+    <div class="navBar">
+      <ul>
+        <li class="options">
+          <img src="./assets/start.png" class="image">
+          <p> Run </p>
+        </li>
+        <li class="options">
+          <img src="./assets/pause.png" class="image">
+          <p> Pause</p>
+        </li>
+        <li class="options">
+          <img src="./assets/restart.png" class="image">
+          <p> Restart</p>
+        </li>
+        <li class="options">
+          <img src="./assets/clear.png" class="image">
+          <p>Clear</p>
+        </li>
+      </ul>
+    </div>
     <div class="screen">
       <div class="board">
         <img src="./assets/left-arrow.png" class="close" @click="close">
@@ -62,15 +81,47 @@ export default {
   flex-direction: column;
   overflow: hidden;
 }
-.header{
+.navBar{
   height: 50px;
   width: 100%;
   padding: 10px;
-  background-color: red;
   display: flex;
+  /* justify-content: flex-end; */
+  justify-content: space-around;
   align-items: center;
-  justify-content: flex-end;
+  background-color: rgb(133, 194, 214);
+  color: white;
+  font-size: 20px;
+  font-family: calibri;
   transform: rotateX('angle');
+}
+.navBar ul{
+  list-style: none;
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.navBar li{
+  color:black;
+  font-weight: bold;
+  transition: 0.3s;
+} 
+.navBar li:hover{
+  color: #EEE;
+}
+.navBar li.options{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.image{
+  margin-right: 5px;
 }
 .screen{
   width: 100%;
@@ -100,7 +151,11 @@ export default {
   padding: 10px;
   width: 200px;
   overflow: hidden;
-  background: lightblue;
+  /* background: lightblue; */
+  background-color: lightgray;
+  font-weight: bold;
+  font-size: 18px;
+  font-family: calibri;
   transition: width 0.5s ease;
 }
 .sidebar ul{
