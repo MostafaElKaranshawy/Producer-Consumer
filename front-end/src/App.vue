@@ -20,7 +20,6 @@
       <div class="board" ref="parent">
         <v-stage :config="configKonva">
           <v-layer>
-            <v-circle
           </v-layer>
         </v-stage>
         <img src="./assets/left-arrow.png" class="close" @click="close">
