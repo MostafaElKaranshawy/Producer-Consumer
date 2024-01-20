@@ -20,8 +20,9 @@
       <div class="board" ref="parent" @click="create">
         <v-stage :config="configKonva">
           <v-layer>
-            <v-regular-polygon v-for="shapeConfig in machines" :key="shapeConfig" :config="shapeConfig" ref="machine" @click="rotate,setShapes(shapeConfig)"/>
-            <v-circle v-for="shapeConfig in queues" :key="shapeConfig" :config="shapeConfig" ref="queue" @click="setShapes(shapeConfig)"/>
+            <v-regular-polygon v-for="shapeConfig in machines" :key="shapeConfig" :config="shapeConfig" ref="machine" @click="rotate,setShapes(shapeConfig)" @dragMove="updateMachine" />
+            <v-circle v-for="shapeConfig in queues" :key="shapeConfig" :config="shapeConfig" ref="queue" @click="setShapes(shapeConfig)" @dragMove="updateQueue" />
+            <v-text v-for="text in texts" :key="text" :config="text" ref="text"/>
             <v-arrow v-for="shapeConfig in arrows" :key="shapeConfig" :config="shapeConfig" ref="arrow" />
           </v-layer>
         </v-stage>
@@ -37,7 +38,7 @@
             <img src="./assets/q.png">
             <p>Queue</p>
           </li>
-          <li class="item connection" @click="this.current = '',set(),this.connection=true">
+          <li class="item connection" @click="this.current = '',set(), enableConnection(!connection)">
             <img src="./assets/connection.png">
             <p>Connect</p>
           </li>
@@ -52,7 +53,7 @@
 </template>
 
 <script>
-import { Stage, Layer, Rect, Line, Text, Arrow } from 'vue-konva';
+import { Stage, Layer, Rect, Line, Text, Arrow, Group } from 'vue-konva';
 export default {
   name: 'App',
   data() {
@@ -74,6 +75,7 @@ export default {
       connections: [],
       // lines: [],
       arrows: [],
+      texts: [],
       // points: [100, 100, 200, 200]
     }
   },
@@ -83,7 +85,8 @@ export default {
     VRect: Rect,
     VLine: Line,
     VText: Text,
-    VArrow: Arrow
+    VArrow: Arrow,
+    VVGroup: Group
   },
   mounted() {
     const parentRect = this.$refs.parent;
@@ -115,6 +118,61 @@ export default {
     },
     restartExecution(){
       this.stopExecution();
+    },
+    updateQueue(e){
+      // console.log(e.target.id())
+      let id = e.target.id();
+      let x = e.target.x();
+      let y = e.target.y();
+      for(let i = 0; i < this.queues.length; i++){
+        if(this.queues[i].id == e.target.id()){
+          this.queues[i].x = x
+          this.queues[i].y = y
+        }
+      }
+      for(let i = 0; i < this.texts.length; i++){
+        if(this.texts[i].id == 'queue'+ id){
+          this.texts[i].x = x - 12;
+          this.texts[i].y = y - 15;
+          // console.log(e.target.x() + "  " + e.target.y())
+        }
+      }
+      for(let i = 0; i < this.arrows.length; i++){
+        if(this.arrows[i].idFrom == 'queue' +id){
+          this.arrows[i].points[0] = x
+          this.arrows[i].points[1] = y;
+        }
+        if(this.arrows[i].idTo == 'queue' +id){
+          this.arrows[i].points[2] = x
+          this.arrows[i].points[3] = y;
+        }
+      }
+    },
+    updateMachine(e){
+      let id = e.target.id();
+      // console.log(id)
+      let x = e.target.x();
+      let y = e.target.y();
+      for(let i = 0; i < this.machines.length; i++){
+        if(this.machines[i].id == e.target.id()){
+          this.machines[i].x = x
+          this.machines[i].y = y
+        }
+      }
+      for(let i = 0; i < this.arrows.length; i++){
+        // console.log(this.arrows[i].idFrom)
+        // console.log(this.arrows[i].idTo)
+        // console.log(this.arrows.idFrom + "  " + this.arrows.idTo)
+        if(this.arrows[i].idFrom == 'machine' + id){
+          this.arrows[i].points[0] = x
+          this.arrows[i].points[1] = y;
+        }
+        if(this.arrows[i].idTo == 'machine' +id){
+          this.arrows[i].points[2] = x
+          this.arrows[i].points[3] = y;
+        }
+        // console.log(this.arrows[i].points)
+      }
     }
     ,
     close(){
@@ -148,15 +206,17 @@ export default {
       this.machines = [];
       this.queues = [];
       this.arrows = [];
+      this.texts = [];
     },
     create(e){
       const parentRect = this.$refs.parent.getBoundingClientRect();
       if(this.current == 'machine'){
         const machine = {
+          id: this.machines.length,
           x: (e.clientX - parentRect.left ),
           y: (e.clientY - parentRect.top ),
           sides:8,
-          radius:70,
+          radius:50,
           fill:"grey",
           stroke:"black",
           draggable: "true",
@@ -170,9 +230,10 @@ export default {
       }
       else if(this.current == 'queue'){
         const queue = {
+          id: this.queues.length,
           x: (e.clientX - parentRect.left ),
           y: (e.clientY - parentRect.top ),
-          radius:70,
+          radius:50,
           fill:"grey",
           stroke:"black",
           draggable: "true",
@@ -181,6 +242,17 @@ export default {
           queueId: this.queues.length+1
         };
         this.queues.push(queue);
+        const text = {
+          id: 'queue'+ queue.id,
+          x: queue.x-11,
+          y: queue.y-15,
+          text: '0',
+          fontSize: 40,
+          fill: 'white',
+          fontFamily: 'calibri'
+          // draggable: true,
+        }
+        this.texts.push(text);
       }
       this.current = '';
       this.set();
@@ -192,30 +264,55 @@ export default {
         let center2X = this.shape2.x;
         let center2Y = this.shape2.y;
         const arrow = {
+          idFrom: this.shape1.type + this.shape1.id,
+          idTo: this.shape2.type + this.shape2.id,
           points: [center1X, center1Y, center2X, center2Y],
           stroke: 'black',
           draggable: true,
         };
+        // console.log(arrow.points)
+        // console.log(arrow.idFrom)
+        // console.log(arrow.idTo)
         // console.log(arrow);
         this.connections.push({shape1: this.shape1, shape2: this.shape2});
         console.log(this.connections);
         console.log(this.connections[0].shape1.type); 
         this.arrows.push(arrow);
+        this.shape1.fill = 'grey'
+        this.shape2.fill = 'grey'
         this.shape1 = null;
         this.shape2 = null;
         this.connection = false;
+        document.querySelector(".connection").classList.remove("active");
+      }
+    },
+    enableConnection(connection){
+      if(connection == false){
+        this.connection == false
+        document.querySelector(".connection").classList.remove("active");
+      }
+      else{
+        this.connection = true;
+        document.querySelector(".queue").classList.remove("active");
+        document.querySelector(".machine").classList.remove("active");
+        document.querySelector(".connection").classList.add("active");
       }
     },
     setShapes(shape){
       if(this.connection){
         if(this.shape1 == null){
           this.shape1 = shape;
+          this.shape1.fill = 'red'
         }
         else if(this.shape2 == null){
           this.shape2 = shape;
+          this.shape2.fill = 'green'
           if(this.connectionValidityChecker()){
-            this.connect(); 
+
+            this.connect();
           }else{
+            this.shape1.fill = 'grey'
+            this.shape2.fill = 'grey'
             this.shape2 = null;
             this.shape1 = null;
             this.connection = false;
@@ -229,7 +326,7 @@ export default {
         alert("Invalid Connection: Same types cannot be connected");
         return false;
       }
-      if(this.connections.length > 0){
+      // if(this.connections.length > 0){
         for(let i = 0; i < this.connections.length; i++){
           if(this.connections[i].shape1 == this.shape1 && this.connections[i].shape2 == this.shape2){
             alert("Invalid Connection: Connection already exists");
@@ -254,9 +351,9 @@ export default {
           //   }
           // }
         }
-      }else{
+      // }else{
         return true;
-      }
+      // }
     }
   }
 }
