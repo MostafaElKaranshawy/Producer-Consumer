@@ -2,6 +2,9 @@
   <div id="app" class="app">
     <div class="navBar">
       <ul>
+        <li>Products Number
+        <input type="number">
+        </li>
         <li class="options" v-if="execution" @click="stopExecution()">
           <img src="./assets/pause.png" class="image">
           <p> Pause</p>
@@ -14,7 +17,11 @@
           <img src="./assets/restart.png" class="image" >
           <p> Restart</p>
         </li>
-      </ul>
+        <li class="options" @click="this.current = '',set(), clear()">
+            <img src="./assets/clear.png" class="image">
+            <p>Clear</p>
+        </li>
+      </ul>  
     </div>
     <div class="screen">
       <div class="board" ref="parent" @click="create">
@@ -43,10 +50,6 @@
           <li class="item connection" @click="this.current = '',set(), enableConnection(!connection)">
             <img src="./assets/connection.png">
             <p>Connect</p>
-          </li>
-          <li class="item clear" @click="this.current = '',set(), clear()">
-            <img src="./assets/clear.png" class="image">
-            <p>Clear</p>
           </li>
         </ul>
       </div>
@@ -441,13 +444,15 @@ export default {
   overflow: hidden;
 }
 .navBar{
-  height: 50px;
+  height: 70px;
   width: 100%;
   padding: 10px;
   display: flex;
   /* justify-content: flex-end; */
   justify-content: space-around;
   align-items: center;
+  padding-right: 150px;
+  padding-left: 100px;
   background-color: rgb(133, 194, 214);
   color: white;
   font-size: 20px;
@@ -457,7 +462,8 @@ export default {
 .navBar ul{
   list-style: none;
   display: flex;
-  justify-content: flex-end;
+  /* justify-content: flex-end; */
+  justify-content: space-around;
   width: 100%;
   margin: 0;
   padding: 0;
