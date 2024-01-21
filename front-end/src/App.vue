@@ -22,6 +22,8 @@
           <v-layer>
             <v-regular-polygon v-for="shapeConfig in machines" :key="shapeConfig" :config="shapeConfig" ref="machine" @click="rotate,setShapes(shapeConfig)" @dragMove="updateMachine" />
             <v-circle v-for="shapeConfig in queues" :key="shapeConfig" :config="shapeConfig" ref="queue" @click="setShapes(shapeConfig)" @dragMove="updateQueue" />
+            <v-text v-for="text in qNames" :key="text" :config="text" ref="text"/>
+            <v-text v-for="text in mNames" :key="text" :config="text" ref="text"/>
             <v-text v-for="text in texts" :key="text" :config="text" ref="text"/>
             <v-arrow v-for="shapeConfig in arrows" :key="shapeConfig" :config="shapeConfig" ref="arrow" />
           </v-layer>
@@ -76,6 +78,8 @@ export default {
       // lines: [],
       arrows: [],
       texts: [],
+      qNames: [],
+      mNames: [],
       // points: [100, 100, 200, 200]
     }
   },
@@ -86,7 +90,7 @@ export default {
     VLine: Line,
     VText: Text,
     VArrow: Arrow,
-    VVGroup: Group
+    VGroup: Group,
   },
   mounted() {
     const parentRect = this.$refs.parent;
@@ -97,6 +101,9 @@ export default {
     
   },
   methods: {
+    updateSimulation(message) {
+      console.log(message)
+    },
     startExecution(){
       this.execution = true;
       for(let i = 0; i < this.machines.length; i++){
@@ -132,8 +139,15 @@ export default {
       }
       for(let i = 0; i < this.texts.length; i++){
         if(this.texts[i].id == 'queue'+ id){
-          this.texts[i].x = x - 12;
-          this.texts[i].y = y - 15;
+          this.texts[i].x = x - 5;
+          this.texts[i].y = y + 12;
+          // console.log(e.target.x() + "  " + e.target.y())
+        }
+      }
+      for(let i = 0; i < this.qNames.length; i++){
+        if(this.qNames[i].id == id){
+          this.qNames[i].x = x - 25;
+          this.qNames[i].y = y -25;
           // console.log(e.target.x() + "  " + e.target.y())
         }
       }
@@ -159,10 +173,13 @@ export default {
           this.machines[i].y = y
         }
       }
+      for(let i = 0; i < this.mNames.length; i++){
+        if(this.mNames[i].id == id){
+          this.mNames[i].x = x - 25;
+          this.mNames[i].y = y -25;
+        }
+      }
       for(let i = 0; i < this.arrows.length; i++){
-        // console.log(this.arrows[i].idFrom)
-        // console.log(this.arrows[i].idTo)
-        // console.log(this.arrows.idFrom + "  " + this.arrows.idTo)
         if(this.arrows[i].idFrom == 'machine' + id){
           this.arrows[i].points[0] = x
           this.arrows[i].points[1] = y;
@@ -171,7 +188,6 @@ export default {
           this.arrows[i].points[2] = x
           this.arrows[i].points[3] = y;
         }
-        // console.log(this.arrows[i].points)
       }
     }
     ,
@@ -210,6 +226,7 @@ export default {
     },
     create(e){
       const parentRect = this.$refs.parent.getBoundingClientRect();
+      let id = -1
       if(this.current == 'machine'){
         const machine = {
           id: this.machines.length,
@@ -222,11 +239,23 @@ export default {
           draggable: "true",
           strokeWidth: 5,
           rotate: 0,
-          name: "M"+(this.machines.length+1),
+          name: "M"+(this.machines.length),
           type: "machine",
           machineId: this.machines.length+1
         };
+        id = machine.id
         this.machines.push(machine);
+        const mname = {
+          id: machine.id,
+          x: machine.x - 25,
+          y: machine.y - 25,
+          text: machine.name,
+          fontSize: 30,
+          fill: 'white',
+          fontFamily: 'calibri'
+          // draggable: true,
+        }
+        this.mNames.push(mname);
       }
       else if(this.current == 'queue'){
         const queue = {
@@ -237,23 +266,48 @@ export default {
           fill:"grey",
           stroke:"black",
           draggable: "true",
-          name: "Q"+(this.queues.length+1),
+          name: "Q"+(this.queues.length),
           type: "queue",
           queueId: this.queues.length+1
         };
+        id = queue.id
         this.queues.push(queue);
         const text = {
           id: 'queue'+ queue.id,
-          x: queue.x-11,
-          y: queue.y-15,
+          x: queue.x - 5,
+          y: queue.y + 12,
           text: '0',
-          fontSize: 40,
+          fontSize: 20,
           fill: 'white',
           fontFamily: 'calibri'
           // draggable: true,
         }
         this.texts.push(text);
+        const qname = {
+          id: queue.id,
+          x: queue.x-25,
+          y: queue.y-25,
+          text: queue.name,
+          fontSize: 30,
+          fill: 'white',
+          fontFamily: 'calibri'
+          // draggable: true,
+        }
+        this.qNames.push(qname);
       }
+      let URL = 'http://localhost:8080/'
+      if(this.current == 'queue')URL += 'addQueue'
+      if(this.current == 'machine')URL += 'addMachine'
+      if(this.current == 'queue' || this.current == 'machine'){
+        fetch(URL,{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+          },
+          body: JSON.stringify(id),
+        }).then().catch(error => console.log(error))
+      }
+      
       this.current = '';
       this.set();
     },
@@ -270,14 +324,23 @@ export default {
           stroke: 'black',
           draggable: true,
         };
-        // console.log(arrow.points)
-        // console.log(arrow.idFrom)
-        // console.log(arrow.idTo)
-        // console.log(arrow);
+
         this.connections.push({shape1: this.shape1, shape2: this.shape2});
         console.log(this.connections);
         console.log(this.connections[0].shape1.type); 
         this.arrows.push(arrow);
+        let toBeSent= {
+          fromId : this.shape1.id,
+          toId : this.shape2.id,
+          source : this.shape1.type
+        }
+        fetch('http://localhost:8080/addConnection',{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/json',
+          },
+          body: JSON.stringify(toBeSent),
+        })
         this.shape1.fill = 'grey'
         this.shape2.fill = 'grey'
         this.shape1 = null;
@@ -290,6 +353,10 @@ export default {
       if(connection == false){
         this.connection == false
         document.querySelector(".connection").classList.remove("active");
+        this.shape1.fill = 'grey'
+        this.shape2.fill = 'grey'
+        this.shape1 = null
+        this.shape2 = null
       }
       else{
         this.connection = true;
@@ -322,6 +389,7 @@ export default {
       }
     },
     connectionValidityChecker(){
+      document.querySelector(".connection").classList.remove("active");
       if(this.shape1.type == this.shape2.type){
         alert("Invalid Connection: Same types cannot be connected");
         return false;
@@ -329,15 +397,19 @@ export default {
       // if(this.connections.length > 0){
         for(let i = 0; i < this.connections.length; i++){
           if(this.connections[i].shape1 == this.shape1 && this.connections[i].shape2 == this.shape2){
+            
+            this.connection = false;
             alert("Invalid Connection: Connection already exists");
             return false;
           }
           else if(this.connections[i].shape1 == this.shape2 && this.connections[i].shape2 == this.shape1){
+            this.connection = false;
             alert("Invalid Connection: This would cause a loop");
             return false;
           }
           if(this.shape1.type == "machine"){
             if(this.connections[i].shape1.type == "machine" && this.connections[i].shape1.machineId == this.shape1.machineId){
+              this.connection = false;
               alert("Invalid Connection: Machine already connected");
               return false;
             }
