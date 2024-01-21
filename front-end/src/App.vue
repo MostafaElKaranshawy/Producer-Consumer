@@ -2,8 +2,10 @@
   <div id="app" class="app">
     <div class="navBar">
       <ul>
-        <li>Products Number
-        <input type="number">
+        <li class="options">
+          <img src="./assets/product.png" class="productimage">
+          <!-- <p>Products Number &nbsp;</p> -->
+        <input type="number" placeholder="Products Num" class="productno">
         </li>
         <li class="options" v-if="execution" @click="stopExecution()">
           <img src="./assets/pause.png" class="image">
@@ -552,5 +554,17 @@ li img{
 }
 .active{
   background: lightblue;
+}
+.navBar .productno{
+  width: 140px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  padding: 5px;
+  margin-left: 10px;
+  font-size: 20px;
+  font-family: calibri;
+  text-align: center;
 }
 </style>
