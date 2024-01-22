@@ -137,19 +137,32 @@ export default {
       }
 
       for(let i = 0; i < this.machines.length; i++){
+        // let hexagon = this.$refs.machine[i].getNode();
         if(this.machines[i].fill != "#808080"){
-          let hexagon = this.$refs.machine[i].getNode();
-          this.anim[i] = new Konva.Animation(function(frame) {
-            hexagon.rotate(1);
-          }, hexagon.getLayer());
-          this.anim[i].start();
+            // this.anim[i].stop();
+            // this.anim[i] = new Konva.Animation(function(frame) {
+            //   hexagon.rotate(1);
+            // }, hexagon.getLayer());
+            this.anim[i].start();
+        }
+        else{
+          this.anim[i].stop();
         }
       }
-
+      if(this.texts[this.texts.length -1].text != this.productNum && this.execution == true)this.updateSimulation()
+      else{
+        this.execution = false;
+      }
       }).catch(error => console.log(error))
 
     },
     startExecution(){
+      for(let i = 0; i < this.machines.length; i++){
+        let hexagon = this.$refs.machine[i].getNode();
+        this.anim[i] = new Konva.Animation(function(frame) {
+          hexagon.rotate(1);
+        }, hexagon.getLayer());
+      }
       this.execution = true;
       console.log("nop" + this.productNum)
       fetch('http://localhost:8080/run',{
@@ -158,7 +171,9 @@ export default {
           'Content-Type':'application/json',
         },
         body: JSON.stringify(this.productNum),
-      }).catch(error => console.log(error))
+      }).then(
+        this.updateSimulation()
+      ).catch(error => console.log(error))
       
     },
     stopExecution(){
@@ -279,7 +294,7 @@ export default {
           y: (e.clientY - parentRect.top ),
           sides:8,
           radius:50,
-          fill:"grey",
+          fill:"#808080",
           stroke:"black",
           draggable: "true",
           strokeWidth: 5,
@@ -308,7 +323,7 @@ export default {
           x: (e.clientX - parentRect.left ),
           y: (e.clientY - parentRect.top ),
           radius:50,
-          fill:"grey",
+          fill:"#808080",
           stroke:"black",
           draggable: "true",
           name: "Q"+(this.queues.length),
@@ -367,7 +382,6 @@ export default {
           idTo: this.shape2.type + this.shape2.id,
           points: [center1X, center1Y, center2X, center2Y],
           stroke: 'black',
-          draggable: true,
         };
 
         this.connections.push({shape1: this.shape1, shape2: this.shape2});
