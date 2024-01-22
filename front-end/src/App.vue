@@ -5,7 +5,7 @@
         <li class="options">
           <img src="./assets/product.png" class="productimage">
           <!-- <p>Products Number &nbsp;</p> -->
-        <input type="number" placeholder="Products Num" class="productno">
+        <input type="number" placeholder="Products Num" class="productno" v-model="productNum">
         </li>
         <li class="options" v-if="execution" @click="stopExecution()">
           <img src="./assets/pause.png" class="image">
@@ -86,6 +86,8 @@ export default {
       qNames: [],
       mNames: [],
       productNum: 0,
+      machineC: [],
+      qSize: []
       // points: [100, 100, 200, 200]
     }
   },
@@ -107,13 +109,35 @@ export default {
     
   },
   methods: {
-    updateSimulation(message) {
-      console.log(message)
-    },
-    startExecution(){
-      this.execution = true;
+    updateSimulation() {
+      fetch('http://localhost:8080/update',{
+        method:'GET',
+        headers:{
+          'Content-Type':'application/json',
+        },
+      }).then(res => {
+          // this.system = res.data.JSON();
+        console.log("success")
+        return res.json()
+      }).then(res => {
+        this.machineC = res[res.length-1].machineColors
+        this.qSize = res[res.length-1].queueSizes
+        console.log(res)
+        console.log(this.machineC)
+        console.log(this.qSize)
+        
+        console.log(this.machineC.length +  "   " + this.qSize.length)
+      for(let i = 0; i < this.machineC.length; i++){
+        console.log(this.machineC[i])
+        this.machines[i].fill = this.machineC[i]
+      }
+      for(let i = 0; i < this.qSize.length; i++){
+        console.log(this.qSize[i])
+        this.texts[i].text = this.qSize[i]
+      }
+
       for(let i = 0; i < this.machines.length; i++){
-        if(this.machines[i].fill != "green"){
+        if(this.machines[i].fill != "#808080"){
           let hexagon = this.$refs.machine[i].getNode();
           this.anim[i] = new Konva.Animation(function(frame) {
             hexagon.rotate(1);
@@ -121,15 +145,21 @@ export default {
           this.anim[i].start();
         }
       }
+
+      }).catch(error => console.log(error))
+
+    },
+    startExecution(){
+      this.execution = true;
+      console.log("nop" + this.productNum)
       fetch('http://localhost:8080/run',{
         method:'POST',
         headers:{
           'Content-Type':'application/json',
         },
         body: JSON.stringify(this.productNum),
-      }).then(
-        console.log("success")
-      ).catch(error => console.log("error AAAAAAAAAA"))
+      }).catch(error => console.log(error))
+      
     },
     stopExecution(){
       this.execution = false;
