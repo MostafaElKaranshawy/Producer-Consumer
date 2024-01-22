@@ -85,6 +85,7 @@ export default {
       texts: [],
       qNames: [],
       mNames: [],
+      productNum: 0,
       // points: [100, 100, 200, 200]
     }
   },
@@ -120,6 +121,15 @@ export default {
           this.anim[i].start();
         }
       }
+      fetch('http://localhost:8080/run',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+        },
+        body: JSON.stringify(this.productNum),
+      }).then(
+        console.log("success")
+      ).catch(error => console.log("error AAAAAAAAAA"))
     },
     stopExecution(){
       this.execution = false;
@@ -431,6 +441,20 @@ export default {
       // }else{
         return true;
       // }
+    },
+    getProductNum(){
+      this.productNum = document.querySelector(".productno").value;
+    },
+    run(){
+      fetch('http://localhost:8080/run',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+        },
+        body: JSON.stringify(this.productNum),
+      }).then(
+        console.log("success")
+      ).catch(error => console.log("error AAAAAAAAAA"))
     }
   }
 }
