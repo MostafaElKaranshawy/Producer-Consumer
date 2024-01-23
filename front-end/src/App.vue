@@ -116,34 +116,27 @@ export default {
           'Content-Type':'application/json',
         },
       }).then(res => {
-          // this.system = res.data.JSON();
-        console.log("success")
+        // console.log("success")
         return res.json()
       }).then(res => {
         this.machineC = res[res.length-1].machineColors
         this.qSize = res[res.length-1].queueSizes
-        console.log(res)
-        console.log(this.machineC)
+        // console.log(res)
+        // console.log(this.machineC)
         console.log(this.qSize)
-        
-        console.log(this.machineC.length +  "   " + this.qSize.length)
+        // console.log(this.machineC.length +  "   " + this.qSize.length)
       for(let i = 0; i < this.machineC.length; i++){
-        console.log(this.machineC[i])
+        // console.log(this.machineC[i])
         this.machines[i].fill = this.machineC[i]
       }
       for(let i = 0; i < this.qSize.length; i++){
-        console.log(this.qSize[i])
+        // console.log(this.qSize[i])
         this.texts[i].text = this.qSize[i]
       }
 
       for(let i = 0; i < this.machines.length; i++){
-        // let hexagon = this.$refs.machine[i].getNode();
         if(this.machines[i].fill != "#808080"){
-            // this.anim[i].stop();
-            // this.anim[i] = new Konva.Animation(function(frame) {
-            //   hexagon.rotate(1);
-            // }, hexagon.getLayer());
-            this.anim[i].start();
+          this.anim[i].start();
         }
         else{
           this.anim[i].stop();
@@ -164,7 +157,7 @@ export default {
         }, hexagon.getLayer());
       }
       this.execution = true;
-      console.log("nop" + this.productNum)
+      // console.log("nop" + this.productNum)
       fetch('http://localhost:8080/run',{
         method:'POST',
         headers:{
@@ -184,6 +177,15 @@ export default {
       }
     },
     restartExecution(){
+      this.machineC = []
+      this.qSize = []
+      this.execution = true;
+      for(let i = 0; i < this.machines.length; i++){
+        let hexagon = this.$refs.machine[i].getNode();
+        this.anim[i] = new Konva.Animation(function(frame) {
+          hexagon.rotate(1);
+        }, hexagon.getLayer());
+      }
       fetch('http://localhost:8080/replay',{
         method:'GET',
         headers:{
@@ -292,6 +294,9 @@ export default {
       this.texts = [];
       this.qSize = [];
       this.mNames = [];
+      this.qNames = [];
+      this.connections = []
+      this.machineC = [];
       fetch('http://localhost:8080/run',{
         method:'DELETE',
         headers:{
@@ -396,12 +401,12 @@ export default {
           idFrom: this.shape1.type + this.shape1.id,
           idTo: this.shape2.type + this.shape2.id,
           points: [center1X, center1Y, center2X, center2Y],
-          stroke: 'black',
+          stroke: 'red',
         };
 
         this.connections.push({shape1: this.shape1, shape2: this.shape2});
-        console.log(this.connections);
-        console.log(this.connections[0].shape1.type); 
+        // console.log(this.connections);
+        // console.log(this.connections[0].shape1.type); 
         this.arrows.push(arrow);
         let toBeSent= {
           fromId : this.shape1.id,
@@ -417,6 +422,8 @@ export default {
         })
         this.shape1.fill = 'grey'
         this.shape2.fill = 'grey'
+        if(this.shape1.type== 'queue')this.shape1.fill = 'black'
+        if(this.shape2.type== 'queue')this.shape2.fill = 'black'
         this.shape1 = null;
         this.shape2 = null;
         this.connection = false;
@@ -512,7 +519,7 @@ export default {
         },
         body: JSON.stringify(this.productNum),
       }).then(
-        console.log("success")
+        // console.log("success")
       ).catch(error => console.log("error AAAAAAAAAA"))
     }
   }
