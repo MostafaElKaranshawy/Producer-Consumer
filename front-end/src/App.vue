@@ -184,7 +184,7 @@ export default {
       }
     },
     restartExecution(){
-      fetch('http://localhost:8080/reply',{
+      fetch('http://localhost:8080/replay',{
         method:'GET',
         headers:{
           'Content-Type':'application/json',
