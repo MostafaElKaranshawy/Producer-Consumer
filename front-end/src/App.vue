@@ -191,8 +191,10 @@ export default {
         headers:{
           'Content-Type':'application/json',
         },
-      }).then(
+      }).then(()=> {
+        console.log("HELLO")
         this.updateSimulation()
+      }
       ).catch(error => console.log(error))
     },
     updateQueue(e){
@@ -296,8 +298,9 @@ export default {
       this.mNames = [];
       this.qNames = [];
       this.connections = []
-      this.machineC = [];
-      fetch('http://localhost:8080/run',{
+      this.machineC = []
+      this.execution = false;
+      fetch('http://localhost:8080/clear',{
         method:'DELETE',
         headers:{
           'Content-Type':'application/json',
