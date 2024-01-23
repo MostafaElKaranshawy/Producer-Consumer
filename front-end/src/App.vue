@@ -184,7 +184,14 @@ export default {
       }
     },
     restartExecution(){
-      this.stopExecution();
+      fetch('http://localhost:8080/reply',{
+        method:'GET',
+        headers:{
+          'Content-Type':'application/json',
+        },
+      }).then(
+        this.updateSimulation()
+      ).catch(error => console.log(error))
     },
     updateQueue(e){
       // console.log(e.target.id())
@@ -283,6 +290,14 @@ export default {
       this.queues = [];
       this.arrows = [];
       this.texts = [];
+      this.qSize = [];
+      this.mNames = [];
+      fetch('http://localhost:8080/run',{
+        method:'DELETE',
+        headers:{
+          'Content-Type':'application/json',
+        },
+      }).catch(error => console.log(error))
     },
     create(e){
       const parentRect = this.$refs.parent.getBoundingClientRect();
@@ -323,7 +338,7 @@ export default {
           x: (e.clientX - parentRect.left ),
           y: (e.clientY - parentRect.top ),
           radius:50,
-          fill:"#808080",
+          fill:"black",
           stroke:"black",
           draggable: "true",
           name: "Q"+(this.queues.length),
