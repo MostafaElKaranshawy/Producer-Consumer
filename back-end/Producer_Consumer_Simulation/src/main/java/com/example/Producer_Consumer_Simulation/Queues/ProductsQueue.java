@@ -50,6 +50,8 @@ public class ProductsQueue implements Observer{
         this.id = id;
     }
 
+
+
     public int getNumberOfProducts(){
         return this.productsToProcess.size();
     }

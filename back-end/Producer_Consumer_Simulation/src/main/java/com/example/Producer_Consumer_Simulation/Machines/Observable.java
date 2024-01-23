@@ -4,6 +4,5 @@ import com.example.Producer_Consumer_Simulation.Queues.Observer;
 
 public interface Observable {
     void addObserver(Observer observer);
-//    void unregister();
     void notifyObservers();
 }

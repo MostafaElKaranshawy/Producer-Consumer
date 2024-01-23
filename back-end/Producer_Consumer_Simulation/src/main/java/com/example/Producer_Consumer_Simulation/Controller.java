@@ -25,18 +25,18 @@ public class Controller {
 
     @PostMapping("/addMachine")
     public void addMachine(@RequestBody int id){
-        System.out.println(id);
+//        System.out.println(id);
         service.addMachineToSystem(id);
     }
 
     @PostMapping("/addQueue")
     public void addQueue(@RequestBody int id){
-        System.out.println(id);
+//        System.out.println(id);
         service.addQueueToSystem(id);
     }
     @PostMapping("/addConnection")
     public void addConnection(@RequestBody SystemDto systemDto){
-        System.out.println(systemDto);
+//        System.out.println(systemDto);
         service.addConnectionToSystem(systemDto);
     }
 
@@ -48,5 +48,17 @@ public class Controller {
     public ArrayList<Memento> sendUpdates(){
        return service.sendingUpdates();
     }
+
+    @DeleteMapping("/clear")
+    public void clear(){
+        service.clearSystem();
+    }
+
+    @GetMapping("/replay")
+    public void replaySimulation(){
+        service.reSimulateSystem();
+    }
+
+
 
 }

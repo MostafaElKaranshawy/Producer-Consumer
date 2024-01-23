@@ -33,4 +33,8 @@ public class CareTaker {
                 new ArrayList<>( mementos.get(mementos.size()-1).getQueueSizes())
         );
     }
+    public void deleteMementos(){
+        this.mementos.clear();
+    }
+
 }

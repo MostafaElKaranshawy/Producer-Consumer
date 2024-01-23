@@ -49,23 +49,12 @@ public class SimulationService {
 //    public void deleteQueue(int queueId){
 //        system.deleteQueue(queueId);
 //    }
-    private void makeMementosReady(){
-        Memento firstMemento =  new Memento();
-        for(int machineCount = 0; machineCount < system.getMachines().size(); machineCount++){
-            firstMemento.addColor("#808080");
-        }
-        for(int queueCount = 0 ; queueCount < system.getQueues().size(); queueCount++){
-            firstMemento.addQueueSize(0);
-        }
-        firstMemento.getQueueSizes().set( 0 , system.getNumberOfProducts() );
-        CareTaker careTaker = CareTaker.getCareTaker();
-        careTaker.addMemento(firstMemento);
-    }
+
 
     public void startSimulationSystem(int numberOfProducts) {
 
         this.setNumberOfProductsInSystem(numberOfProducts);
-        this.makeMementosReady();
+        this.system.makeMementosReady();
 
 
         this.system.simulate();
@@ -75,7 +64,13 @@ public class SimulationService {
         system.setNumberOfProducts(numberOfProducts);
     }
 
+    public void clearSystem(){
+        system.clear();
+    }
+    public void reSimulateSystem(){
+        system.reSimulate();
 
+    }
 
 
 

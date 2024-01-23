@@ -111,7 +111,7 @@ public class Machine implements Observable, Runnable {
                 this.notifyObservers();
 //                System.out.println(Thread.currentThread() + " before sync ");
                 if(inOutProduct != null){
-                    synchronized(this){
+                    synchronized(this.careTaker.getMementos()){
                         System.out.println(Thread.currentThread() + " inside sync ");
                         machineChanges = careTaker.cloneLastMemento();
         //              System.out.println(Thread.currentThread() + " Last Memento at the start of processing: " + machineChanges.toString());

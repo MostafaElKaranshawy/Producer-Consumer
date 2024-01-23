@@ -3,6 +3,7 @@ package com.example.Producer_Consumer_Simulation;
 import com.example.Producer_Consumer_Simulation.Machines.Machine;
 import com.example.Producer_Consumer_Simulation.Queues.ProductsQueue;
 import com.example.Producer_Consumer_Simulation.SnapShot.CareTaker;
+import com.example.Producer_Consumer_Simulation.SnapShot.Memento;
 
 import java.util.ArrayList;
 
@@ -12,12 +13,15 @@ public class SimulationSystem {
     private ArrayList<Machine> machines;
     private ArrayList<ProductsQueue> queues;
     private int numberOfProducts;
+    private ArrayList<String> productColors;
     private CareTaker careTaker;
     private SimulationSystem(){
-        threads = new ArrayList<>();
-        machines = new ArrayList<>();
-        queues = new ArrayList<>();
-        careTaker = CareTaker.getCareTaker();
+        this.threads = new ArrayList<>();
+        this.machines = new ArrayList<>();
+        this.queues = new ArrayList<>();
+        this.productColors = new ArrayList<>();
+        this.careTaker = CareTaker.getCareTaker();
+
     }
     public static synchronized SimulationSystem getInstance(){
         if (system == null)
@@ -48,9 +52,10 @@ public class SimulationSystem {
     public void setNumberOfProducts(int numberOfProducts) {
         this.numberOfProducts = numberOfProducts;
         for(int i = 0; i< numberOfProducts; i++){
-            queues.get(0).addProduct(new Product());
+            Product product = new Product();
+            this.productColors.add(product.getColor());
+            queues.get(0).addProduct(product);
         }
-
     }
 
     public void addMachine(int id){
@@ -73,7 +78,7 @@ public class SimulationSystem {
         }
         return null;
     }
-    public void connectQueueToMachine(int queueId, int machineId ){
+    public void connectQueueToMachine(int queueId, int machineId){
         ProductsQueue specificQueue = getQueueById(queueId);
         Machine specificMachine = getMachineById(machineId);
         specificMachine.addObserver(specificQueue);
@@ -138,16 +143,55 @@ public class SimulationSystem {
 //        }
 //        this.queues.remove(specificQueue);
 //    }
+    public void clear(){
+        this.threads = new ArrayList<>();
+        this.machines = new ArrayList<>();
+        this.queues = new ArrayList<>();
+        this.numberOfProducts = 0;
+        this.careTaker.deleteMementos();
+        this.productColors = new ArrayList<>();
+    }
+    public void makeMementosReady(){
+        CareTaker careTaker = CareTaker.getCareTaker();
+        careTaker.deleteMementos();
+        Memento firstMemento =  new Memento();
+        for(int machineCount = 0; machineCount < system.getMachines().size(); machineCount++){
+            firstMemento.addColor("#808080");
+        }
+        for(int queueCount = 0 ; queueCount < system.getQueues().size(); queueCount++){
+            firstMemento.addQueueSize(0);
+        }
+        firstMemento.getQueueSizes().set( 0 , system.getNumberOfProducts() );
+        careTaker.addMemento(firstMemento);
+    }
+
+    public void reSimulate(){
+        for(int i = 0; i < this.numberOfProducts;i++) {
+            this.queues.get(this.queues.size()-1).getProductsToProcess().poll();
+            this.queues.get(0).getProductsToProcess().add(
+                    new Product(this.productColors.get(i))
+            );
+        }
+        this.makeMementosReady();
+        this.threads.clear();
+        System.out.println(  this.careTaker.getMementos().size());
+        this.simulate();
+    }
+
+
     public void simulate(){
+        System.out.println("colors:  "+this.productColors.size());
+        System.out.println(this.queues.get(0).getProductsToProcess().toString());
         for (Machine machine: this.machines){
             Thread thread = new Thread(machine);
             //machine.setOnState(true);
             threads.add(thread);
         }
-        System.out.println(this.queues.getFirst().getObservableMachines().size());
+        System.out.println(this.queues.get(0).getObservableMachines().size());
         System.out.println(this.threads);
         for (Thread thread: this.threads){
             thread.start();
         }
     }
+
 }
