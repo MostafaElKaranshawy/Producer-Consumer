@@ -30,8 +30,7 @@ To use the tools and examples provided in this repository, you need to have npm 
 ![image](https://github.com/MostafaElKaranshawy/Producer-Consumer/assets/110842052/f5440d54-3ba8-4ed2-a741-2e28839f89f2)
 
 For Higher Quality:
-https://lucid.app/lucidchart/506df145-c24f-4126-a278-8a9723a28bb7/edit?view_items=vFi8
-li.ps7wM&invitationId=inv_7d9b55f5-4f49-45d8-a2ec-ff99d9244f71
+(https://lucid.app/lucidchart/506df145-c24f-4126-a278-8a9723a28bb7/edit?view_items=vFi8li.ps7wM&invitationId=inv_7d9b55f5-4f49-45d8-a2ec-ff99d9244f71)
 
 ## Design-Patterns
 From concurrency patterns:
