@@ -69,7 +69,7 @@ https://github.com/MostafaElKaranshawy/Producer-Consumer/assets/110842052/e8964e
 
 
 
-## Contributeres
+## Contributers
 ### Front-End
 - [Mustafa ElKaranshawy](https://github.com/MostafaElKaranshawy)
 - [Rowan Gamal](https://github.com/rowanxgamal)
