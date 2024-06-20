@@ -10,7 +10,7 @@
 - [User Guide](#User-Guide)
 - [User Interface](#User-Interface)
 - [Tutorial](#Tutorial)
-- [Contributers](#Contributers)
+- [Contributors](#Contributors)
   
 ## Installation
 
@@ -68,7 +68,7 @@ https://github.com/MostafaElKaranshawy/Producer-Consumer/assets/110842052/e8964e
 
 
 
-## Contributers
+## Contributors
 ### Front-End
 - [Mustafa ElKaranshawy](https://github.com/MostafaElKaranshawy)
 - [Rowan Gamal](https://github.com/rowanxgamal)
