@@ -1,5 +1,6 @@
-# Paint
-  Paint is a Web Application that used to create different shapes and the editing them.
+# Producer Consumer
+  Producer Consumer is a fullstack web application that applying Producer-Consumer Design Pattern with Threads.
+  The Application consists of Machines and Queues that the user can build any system he wants and run to see the simulation of the process over time.
   
 ## Table of Contents
 
